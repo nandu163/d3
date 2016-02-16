@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title> Nandu's week log </title>
+	<title> Nandu's Fitbit steps log </title>
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 </head>
 
@@ -30,20 +30,21 @@ var stepsA = [14701,5423,6823,8958,8234,
 			
 
 
-//varAllArrays = (stepsA.concat(stepsB)).concat(stepsC);
 
 maxValue = Math.max.apply(Math, stepsA);
 minValue = Math.min.apply(Math, stepsA);
-//minValue = Math.min.apply(Math, varAllArrays);
+
 
 
 var canvasWidth = 500;
 var canvasHeight = 2500;
 
+//Creating a Scale to fit the canvas
 var widthscale = d3.scale.linear()
 				.domain([0,maxValue])
 				.range([0,canvasWidth]);
 
+//Color scale from Yellow to Green
 var colorScale = d3.scale.linear()
 				.domain([minValue,maxValue])
 				.range(["yellow","green"]);
@@ -75,8 +76,7 @@ canvas.selectAll("text")
 				
 
 	
-	/*d3.json("mydata.json", function(data){
-		
+	/*d3.json("mydata.json", function(data){		
 	}
 	);--> Path to JSON File
 	*/
