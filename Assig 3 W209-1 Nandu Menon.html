@@ -1,0 +1,75 @@
+<html>
+<head>
+	<title> Nandu's week log </title>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+<h2> Assignment 3: W209-1 Nandu Menon </h2>
+<h3> Fitbit Steps data : Jan 10,2016 to Jan 31,2016 </h3>
+
+<script>
+
+var stepsA = [14701,5423,6823,8958,8234,
+			  5601,10613,8990,12858,10234,
+			  15201,12323,17890,18858,6781,
+			  7201,8453,6250,13210,8881,
+			  9511,10567];
+			
+
+
+//varAllArrays = (stepsA.concat(stepsB)).concat(stepsC);
+
+maxValue = Math.max.apply(Math, stepsA);
+minValue = Math.min.apply(Math, stepsA);
+//minValue = Math.min.apply(Math, varAllArrays);
+
+
+var canvasWidth = 500;
+var canvasHeight = 2500;
+
+var widthscale = d3.scale.linear()
+				.domain([0,maxValue])
+				.range([0,canvasWidth]);
+
+var colorScale = d3.scale.linear()
+				.domain([minValue,maxValue])
+				.range(["yellow","green"]);
+				
+var canvas = d3.select("body")
+			.append("svg")
+			.attr("width",canvasWidth)
+			.attr("height",canvasHeight);
+
+var bars = canvas.selectAll("rect")
+			.data(stepsA)
+			.enter()
+				.append("rect")
+				.attr("width",function(d){return widthscale(d);})
+				.attr("height",30)
+				.attr("fill",function(d){return colorScale(d);})
+				.attr("y",function(d,i){return i*40;})
+				.attr("x",50);
+
+canvas.selectAll("text")
+			.data(stepsA)
+			.enter()
+				.append("text")
+				.attr("fill","black")
+				.attr("y",function(d,i){return i*40 + 20;})
+				//.text("Day ".concat(i.toString()))
+				.text(function(d,i){return "Jan ".concat((i+10).toString()).concat("  : ").concat(d.toString());})
+
+				
+
+	
+	/*d3.json("mydata.json", function(data){
+		
+	}
+	);--> Path to JSON File
+	*/
+	
+</script>
+
+</body>
+</html>
