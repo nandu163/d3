@@ -1,0 +1,221 @@
+<html>
+<head>
+	<title> Nandu's Fitbit steps log </title>
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+
+<h2> Assignment 4: W209-1 Nandu Menon </h2>
+<h2> Change Shapes - Transitions </h2>
+<div id="outercontainer"> 
+	<button class="btn btn-mini" id="buttonCircle">Change Circle</button>
+	<button class="btn btn-mini" id="buttonRect">Change Rectangle</button>	
+</div>
+<br>
+<h2> Fitbit Steps data : Jan 10,2016 to Jan 31,2016 </h2>
+<h3><i>Color Gradient Legend : </i></h3>
+<p>
+Low # of Steps/day 
+<svg width="100" height="30">
+  <rect width="100" height="30" style="fill:yellow;stroke:yellow">
+  Sorry, your browser does not support inline SVG.  
+</svg> 
+<svg width="100" height="30">
+  <rect width="100" height="30" style="fill:green;stroke:green">
+  Sorry, your browser does not support inline SVG.  
+</svg> High # of Steps/day
+</p>
+<h2 style="color:red;font-style:italic;">Check out the tool-tip feature below : </h2>
+<div class="container">    
+    <div id="chart"></div>
+</div>
+<br>
+
+<br>
+
+<script>
+
+topWidth = 400;
+topHeight= 100;
+
+var svg = d3.select("#outercontainer")
+      .append("svg")
+      .attr("width", topWidth)
+      .attr("height", topHeight);
+    var mySquare=svg.append("rect")
+      .attr("x",60)
+      .attr("y",60)
+      .attr("width",60)
+      .attr("height",60);
+	  
+	  var myCircle = svg.append("circle")
+	  .attr("cx",200)
+	  .attr("cy",60)
+	  .attr("r",30)
+	  .style("fill","orange");
+	  
+    mySquare
+      .style("fill","blue");
+	  
+    var buttonRect = d3.select("#buttonRect");
+    
+	buttonRect.on("click", function(){
+      mySquare.transition()
+		//.attr("x",200)
+		.attr("x",getRandomInRange(40,topWidth-30))
+		.attr("width",getRandomInRange(20,60))
+		.attr("height",getRandomInRange(20,60))
+		.style("fill",getRandomColor())
+		.duration(2000)
+		.ease('elastic');
+
+		transitionBars();
+    })
+	
+	
+	var buttonCirc = d3.select("#buttonCircle");
+    
+	buttonCirc.on("click", function(){
+      myCircle.transition()
+		.attr("cx",getRandomInRange(60,topWidth-20))
+		.attr("r",getRandomInRange(20,40))
+		.style("fill",getRandomColor())
+		.duration(2000)
+		.ease('elastic');
+
+		transitionBars();		
+    })
+	
+	function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++ ) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+	}
+	
+	function getRandomInRange(min, max) 
+	{
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+
+var stepsA = [14701,5423,6823,8958,8234,
+			  5601,10613,8990,12858,10234,
+			  15201,12323,17890,18858,6781,
+			  7201,8453,6250,13210,8881,
+			  9511,10567];
+			
+
+
+
+maxValue = Math.max.apply(Math, stepsA);
+minValue = Math.min.apply(Math, stepsA);
+
+
+
+var canvasWidth = 1000;
+var canvasHeight = 2500;
+
+//Creating a Scale to fit the canvas
+var widthscale = d3.scale.linear()
+				.domain([0,maxValue])
+				.range([0,canvasWidth]);
+				
+var heightscale = d3.scale.linear()
+				.domain([0,maxValue])
+				.range([0,canvasHeight]);
+
+//Color scale from Yellow to Green
+var colorScale = d3.scale.linear()
+				.domain([minValue,maxValue])
+				.range(["yellow","green"]);
+
+var tooltip = d3.select('#chart').append('div')
+        .style('position', 'absolute')
+        .style('padding', '0 10px')
+        .style('background', 'white')
+        .style('opacity', 0)
+				
+var canvas = d3.select("#chart")
+			.append("svg")
+			.attr("width",canvasWidth)
+			.attr("height",canvasHeight);
+
+var bars = canvas.selectAll("rect")
+			.data(stepsA)
+			.enter()
+				.append("rect")
+				.attr("width",function(d){return widthscale(d);})
+				.attr("height",30)
+				.attr("fill",function(d){return colorScale(d);})
+				.attr("y",function(d,i){return i*40;})
+				.attr("x",50)
+
+
+
+				
+    .on('mouseover', function(d) {
+        tempColor = this.style.fill;
+		
+		tooltip.transition()
+            .style('opacity', .9)
+
+        tooltip.html(d)
+            .style('left', (d3.event.pageX - 35) + 'px')
+            .style('top',  (d3.event.pageY - 30) + 'px')
+		
+		d3.select(this)
+            .style('opacity', .9)
+            .style('fill', 'red')			
+
+    })
+
+    .on('mouseout', function(d) {
+        d3.select(this)
+            .style('opacity', 1)
+            .style('fill', tempColor);	
+			
+		tooltip.html("");
+			
+    })
+	
+	function transitionBars() {
+	bars.transition()
+    .attr('width', function(d) {
+        return widthscale(d) - 100 ;
+    })
+    .attr('y', function(d,i) {
+        return i*40;
+    })
+    .delay(function(d, i) {
+        return i * 20;
+    })
+    .duration(7000)
+    .ease('elastic')
+	}
+	
+
+	transitionBars();
+
+	
+	
+	
+canvas.selectAll("text")
+			.data(stepsA)
+			.enter()
+				.append("text")
+				.attr("fill","black")
+				.attr("y",function(d,i){return i*40 + 20;})
+				.text(function(d,i){return "Jan ".concat((i+10).toString());})
+				
+				
+
+
+	
+</script>
+
+</body>
+</html>
